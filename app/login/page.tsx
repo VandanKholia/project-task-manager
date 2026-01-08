@@ -14,11 +14,11 @@ function Login() {
 
   // Password validation
   const validatePassword = (password: string) => {
-    const minLength = /.{8,}/;
+    const minLength = /.{5,}/;
     const hasLower = /[a-z]/;
     const hasNumber = /[0-9]/;
 
-    if (!minLength.test(password)) return "Password must be at least 8 characters long.";
+    if (!minLength.test(password)) return "Password must be at least 5 characters long.";
     if (!hasLower.test(password)) return "Password must include a lowercase letter.";
     if (!hasNumber.test(password)) return "Password must include a number.";
     return "";
@@ -59,11 +59,10 @@ function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        // backend / auth error → alert
         throw new Error(data.message || "Invalid email or password");
       }
 
-      router.push("/home");
+      router.push("/dashboard");
 
     } catch (err: any) {
       alert(err.message);
@@ -94,7 +93,7 @@ function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 outline-none transition-all duration-200 text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 outline-none transition-all duration-200 text-gray-900 placeholder-gray-500"
                   placeholder="Enter your email"
                   required
                 />
@@ -110,14 +109,14 @@ function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 ${
-                    error ? "border-red-500 focus:ring-red-200" : "border-gray-200"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                    passwordError ? "border-red-500 focus:ring-red-200" : "border-gray-200"
                   }`}
                   placeholder="Enter your password"
                   required
                 />  
-                {error && (
-                  <p className="text-red-500 text-sm mt-1 font-medium">{error}</p>
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-1 font-medium">{passwordError}</p>
                 )}
               </div>
 

@@ -8,6 +8,7 @@ function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -17,9 +18,10 @@ function Register() {
         const hasLower = /[a-z]/;
         const hasNumber = /[0-9]/;
 
-        if (!minLength.test(password)) return "Password must be at least 5 characters long.";
-        if (!hasLower.test(password)) return "Password must include a lowercase letter.";
-        if (!hasNumber.test(password)) return "Password must include a number.";
+        if (!minLength.test(password)) {setPasswordError("Password must be at least 5 characters long."); return true};
+        if (!hasLower.test(password)) {setPasswordError("Password must include a lowercase letter."); return true};
+        if (!hasNumber.test(password)) {setPasswordError("Password must include a number."); return true};
+        setPasswordError("");
         return "";
     };
 
@@ -29,7 +31,6 @@ function Register() {
 
         const passwordError = validatePassword(password);
         if (passwordError) {
-            setError(passwordError);
             return;
         }
 
@@ -49,12 +50,12 @@ function Register() {
             });
 
             const data = await res.json();
-
+            console.log(data)
             if (!res.ok) {
-                throw new Error(data.message || "Registration failed");
+                alert(data.error || "Registration failed");
+                throw new Error(data.error || "Registration failed");
             }
 
-            // success
             router.push("/login");
 
         } catch (err: any) {
@@ -110,20 +111,20 @@ function Register() {
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className={`w-full px-4 py-3 border-2 rounded-xl ${
-                                        error ? "border-red-500" : "border-gray-200"
+                                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 outline-none transition-all duration-200 text-gray-900 placeholder-gray-500 ${
+                                        passwordError ? "border-red-500 focus:ring-red-200" : "border-gray-200"
                                     }`}
                                     required
                                 />
-                                {error && (
-                                    <p className="text-red-500 text-sm mt-1">{error}</p>
+                                {passwordError && (
+                                    <p className="text-red-500 text-sm mt-1">{passwordError}</p>
                                 )}
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold"
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold"
                             >
                                 {isLoading ? "Creating account..." : "Sign Up"}
                             </button>
