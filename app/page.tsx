@@ -1,12 +1,5 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div>
-       <h1 className="text-4xl font-bold underline">
-      Hello world!
-    </h1>
-    </div>
-  );
+  redirect("/dashboard");
 }

@@ -164,7 +164,7 @@ function Login() {
                 <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-600">New to Contest Tracker?</span>
+                <span className="px-4 bg-white text-gray-600">Don't have an account?</span>
               </div>
             </div>
 
@@ -173,12 +173,13 @@ function Login() {
               <button
                 type="button"
                 className="text-gray-600 hover:text-blue-600 font-semibold transition-colors duration-200 group"
-                onClick={() => router.push("/dashboard")}
+                onClick={() => router.push("/register")}
               >
                 Create an account
                 <span className="inline-block ml-1 transform group-hover:translate-x-1 transition-transform duration-200">
                   →
                 </span>
+                
               </button>
             </div>
           </div>
