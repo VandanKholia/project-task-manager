@@ -18,36 +18,71 @@ export default function DashboardPage() {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    //fetch the current user from cookies
-    
-    const fetchUser = async () => {
-      const res = await fetch("/api/user");
-      if (res.ok) {
-        const userData = await res.json();
+
+  // Data State
+  const [projects, setProjects] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [myTasks, setMyTasks] = useState<any[]>([]);
+
+  const fetchDashboardData = async () => {
+    try {
+      // 1. Fetch User (if not already valid, but we need strictly for filtering)
+      const userRes = await fetch("/api/user");
+      if (userRes.ok) {
+        const userData = await userRes.json();
         setUser(userData);
+
+        // 2. Fetch Projects and Tasks in parallel
+        const [projectsRes, tasksRes] = await Promise.all([
+          fetch("/api/projects"),
+          fetch("/api/tasks")
+        ]);
+
+        if (projectsRes.ok) {
+          setProjects(await projectsRes.json());
+        }
+
+        if (tasksRes.ok) {
+          const allTasks = await tasksRes.json();
+          setTasks(allTasks);
+
+          // Filter my tasks
+          const mine = allTasks.filter((t: any) => t.assignedTo?.username === userData.username);
+          setMyTasks(mine);
+        }
+
       } else {
         router.push("/login");
       }
+    } catch (error) {
+      console.error("Dashboard load failed", error);
+    } finally {
       setLoading(false);
-    };
-    fetchUser();
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
   }, [router]);
-  
+
+  // Compute Stats
+  const totalProjects = projects.length;
+  // Count tasks by status from ALL tasks (org view)
+  const pendingTasks = tasks.filter((t: any) => t.status === "Pending" || t.status === "InProgress").length;
+  const completedTasks = tasks.filter((t: any) => t.status === "Completed").length;
+  // Simple "productivity" metric: Completed / Total * 100
+  const totalTasks = tasks.length;
+  const productivity = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
   const stats = [
-    { label: "Total Projects", value: "12", icon: Folder, color: "text-blue-600", bg: "bg-blue-100" },
-    { label: "Tasks Pending", value: "24", icon: Clock, color: "text-amber-600", bg: "bg-amber-100" },
-    { label: "Completed", value: "128", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100" },
-    { label: "Productivity", value: "92%", icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-100" },
+    { label: "Total Projects", value: totalProjects.toString(), icon: Folder, color: "text-blue-600", bg: "bg-blue-100" },
+    { label: "Tasks Pending", value: pendingTasks.toString(), icon: Clock, color: "text-amber-600", bg: "bg-amber-100" },
+    { label: "Completed", value: completedTasks.toString(), icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100" },
+    { label: "Productivity", value: `${productivity}%`, icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-100" },
   ];
 
-  const recentTasks = [
-    { id: 1, title: "Design Landing Page", project: "Marketing Site", due: "Today", status: "In Progress", priority: "High" },
-    { id: 2, title: "Fix API Authentication", project: "Mobile App", due: "Tomorrow", status: "Pending", priority: "High" },
-    { id: 3, title: "Update User Documentation", project: "Internal Wiki", due: "Jan 12", status: "Completed", priority: "Low" },
-    { id: 4, title: "Review PR #42", project: "Platform Core", due: "Jan 14", status: "Pending", priority: "Medium" },
-  ];
+  // Limit recent tasks to 5
+  const recentTasksDisplay = myTasks.slice(0, 5);
 
   const activities = [
     { id: 1, user: "Alice Johnson", action: "completed task", target: "Homepage Hero Section", time: "2h ago" },
@@ -111,32 +146,38 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-4">
-              {recentTasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-slate-300 transition-colors group">
-                  <div className="flex items-start gap-4">
-                    <button className={`mt-1 h-5 w-5 rounded border flex items-center justify-center ${task.status === "Completed" ? "bg-green-500 border-green-500 text-white" : "border-slate-300 bg-white hover:border-indigo-500"}`}>
-                      {task.status === "Completed" && <CheckCircle2 className="h-3.5 w-3.5" />}
-                    </button>
-                    <div>
-                      <h4 className={`font-semibold text-slate-800 ${task.status === "Completed" ? "line-through text-slate-400" : ""}`}>{task.title}</h4>
-                      <p className="text-xs text-slate-500 mt-1">
-                        <span className="font-medium text-slate-600">{task.project}</span> • Due {task.due}
-                      </p>
+              {recentTasksDisplay.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  No tasks assigned to you yet.
+                </div>
+              ) : (
+                recentTasksDisplay.map((task) => (
+                  <div key={task.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-slate-300 transition-colors group">
+                    <div className="flex items-start gap-4">
+                      <button className={`mt-1 h-5 w-5 rounded border flex items-center justify-center ${task.status === "Completed" ? "bg-green-500 border-green-500 text-white" : "border-slate-300 bg-white hover:border-indigo-500"}`}>
+                        {task.status === "Completed" && <CheckCircle2 className="h-3.5 w-3.5" />}
+                      </button>
+                      <div>
+                        <h4 className={`font-semibold text-slate-800 ${task.status === "Completed" ? "line-through text-slate-400" : ""}`}>{task.title}</h4>
+                        <p className="text-xs text-slate-500 mt-1">
+                          <span className="font-medium text-slate-600">{task.project}</span> • Due {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "No Date"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-full 
+                        ${task.priority === "High" ? "bg-red-100 text-red-700" :
+                          task.priority === "Medium" ? "bg-amber-100 text-amber-700" :
+                            "bg-blue-100 text-blue-700"}`}>
+                        {task.priority}
+                      </span>
+                      <button className="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <MoreVertical className="h-5 w-5" />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-full 
-                      ${task.priority === "High" ? "bg-red-100 text-red-700" :
-                        task.priority === "Medium" ? "bg-amber-100 text-amber-700" :
-                          "bg-blue-100 text-blue-700"}`}>
-                      {task.priority}
-                    </span>
-                    <button className="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVertical className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -183,7 +224,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <CreateTaskModal isOpen={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} />
+      <CreateTaskModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        onTaskCreated={fetchDashboardData}
+      />
     </div>
   );
 }

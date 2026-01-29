@@ -77,8 +77,8 @@ model Task {
   listId      Int
   list        TaskList @relation(fields: [listId], references: [id])
 
-  assignedToId Int
-  assignedTo   User     @relation(fields: [assignedToId], references: [id])
+  assignedToId Int?
+  assignedTo   User?    @relation(fields: [assignedToId], references: [id])
 
   comments    TaskComment[]
   history     TaskHistory[]
