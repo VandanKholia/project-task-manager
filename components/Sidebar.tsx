@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
     LayoutDashboard,
     FolderKanban,
@@ -13,6 +14,18 @@ import {
 } from "lucide-react";
 
 export function Sidebar() {
+    const router = useRouter();
+    const handelLogout = ()=> {
+        fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+        })
+        .then(res => {
+            if (res.ok) {
+                router.push("/login");
+            }
+        })
+    }
     const pathname = usePathname();
 
     const navItems = [
@@ -52,7 +65,7 @@ export function Sidebar() {
             </nav>
 
             <div className="p-4 border-t border-slate-800">
-                <button className="flex items-center w-full px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                <button className="flex items-center w-full px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors" onClick={handelLogout}>
                     <LogOut className="h-5 w-5 mr-3" />
                     <span className="font-medium">Logout</span>
                 </button>
