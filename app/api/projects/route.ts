@@ -11,13 +11,49 @@ export async function GET() {
 
     const projects = await prisma.project.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        members: {
+          include: {
+            user: { select: { id: true, username: true } },
+          },
+        },
+        taskLists: {
+          include: {
+            tasks: { select: { id: true, status: true } },
+          },
+        },
+      },
     });
 
-    return NextResponse.json(projects);
+    const formatted = projects.map((p) => {
+      const allTasks = p.taskLists.flatMap((l) => l.tasks);
+      const completedTasks = allTasks.filter((t) => t.status === "Completed").length;
+      const totalTasks = allTasks.length;
+      const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+      return {
+        id: p.id,
+        projectName: p.projectName,
+        description: p.description,
+        createdAt: p.createdAt,
+        totalTasks,
+        completedTasks,
+        progress,
+        memberCount: p.members.length,
+        members: p.members.map((m) => ({
+          id: m.user.id,
+          initials: m.user.username.substring(0, 2).toUpperCase(),
+          name: m.user.username,
+        })),
+      };
+    });
+
+    return NextResponse.json(formatted);
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
 
 export async function POST(request: Request) {
   try {

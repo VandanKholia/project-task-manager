@@ -93,8 +93,13 @@ export default function ProjectsPage() {
 
                                     <div className="space-y-4">
                                         <div className="flex justify-between items-center text-sm">
-                                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-                                                In Progress
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${project.progress === 100
+                                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                                    : project.totalTasks > 0
+                                                        ? "bg-blue-50 text-blue-700 border border-blue-100"
+                                                        : "bg-slate-100 text-slate-600 border border-slate-200"
+                                                }`}>
+                                                {project.progress === 100 ? "Completed" : project.totalTasks > 0 ? "In Progress" : "Not Started"}
                                             </span>
                                             <span className="flex items-center text-slate-400 text-xs">
                                                 <Calendar className="h-3.5 w-3.5 mr-1" />
@@ -102,25 +107,43 @@ export default function ProjectsPage() {
                                             </span>
                                         </div>
 
-                                        {/* Progress Bar (Mocked for now as we don't have tasks count) */}
-                                        <div className="w-full bg-slate-100 rounded-full h-2">
-                                            <div
-                                                className="h-2 rounded-full bg-indigo-500 transition-all duration-500"
-                                                style={{ width: "0%" }}
-                                            ></div>
-                                        </div>
-
-                                        <div className="flex justify-between items-center pt-2">
-                                            <span className="text-xs font-medium text-slate-500">0% Complete</span>
-
-                                            {/* Members Mock - eventually fetch from project members */}
-                                            <div className="flex -space-x-2">
-                                                <div className="h-7 w-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">
-                                                    ?
-                                                </div>
+                                        <div>
+                                            <div className="w-full bg-slate-100 rounded-full h-2">
+                                                <div
+                                                    className={`h-2 rounded-full transition-all duration-500 ${project.progress === 100 ? "bg-emerald-500" : "bg-indigo-500"}`}
+                                                    style={{ width: `${project.progress}%` }}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between items-center pt-1.5">
+                                                <span className="text-xs font-medium text-slate-500">
+                                                    {project.completedTasks}/{project.totalTasks} tasks · {project.progress}%
+                                                </span>
                                             </div>
                                         </div>
+
+                                        <div className="flex justify-between items-center pt-1">
+                                            <div className="flex -space-x-2">
+                                                {project.members && project.members.length > 0 ? (
+                                                    <>
+                                                        {project.members.slice(0, 4).map((m: any) => (
+                                                            <div key={m.id} title={m.name} className="h-7 w-7 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-indigo-700">
+                                                                {m.initials}
+                                                            </div>
+                                                        ))}
+                                                        {project.memberCount > 4 && (
+                                                            <div className="h-7 w-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600">
+                                                                +{project.memberCount - 4}
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <span className="text-xs text-slate-400 italic">No members</span>
+                                                )}
+                                            </div>
+                                            <span className="text-xs text-slate-400">{project.memberCount ?? 0} member{(project.memberCount ?? 0) !== 1 ? "s" : ""}</span>
+                                        </div>
                                     </div>
+
                                 </div>
                             </Link>
                         ))}

@@ -28,8 +28,8 @@ export async function GET() {
             id: user.id,
             name: user.username,
             email: user.email,
-            role: user.roles.length > 0 ? user.roles.map(r => r.role.roleName).join(", ") : "Member", // Default to Member if no role
-            status: "Active", // Hardcoded for now 
+            role: user.roles.length > 0 ? user.roles.map(r => r.role.roleName).join(", ") : "Member", 
+            status: "Active", 
             initials: user.username.substring(0, 2).toUpperCase(),
             createdAt: user.createdAt
         }));
