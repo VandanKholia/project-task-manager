@@ -18,11 +18,15 @@ export async function getCurrentUser() {
                 id: true,
                 username: true,
                 email: true,
-                roles: true,
+                roles: {
+                    include: {
+                        role: true
+                    }
+                },
             },
         });
 
-    return user;
+        return user;
 
     } catch (error) {
         console.error("Auth Error:", error);

@@ -17,17 +17,36 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }: AddUserModalProps
         username: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        roleId: ""
     });
+
+    const [roles, setRoles] = useState<any[]>([]);
 
     useEffect(() => {
         if (isOpen) {
             setIsAnimating(true);
+            fetchRoles();
         } else {
             const timer = setTimeout(() => setIsAnimating(false), 300);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
+
+    const fetchRoles = async () => {
+        try {
+            const res = await fetch("/api/roles");
+            if (res.ok) {
+                const data = await res.json();
+                setRoles(data);
+                if (data.length > 0) {
+                    setFormData(prev => ({ ...prev, roleId: data[0].id.toString() }));
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch roles", error);
+        }
+    };
 
     const handleSubmit = async () => {
         if (formData.password !== formData.confirmPassword) {
@@ -43,12 +62,13 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }: AddUserModalProps
                 body: JSON.stringify({
                     username: formData.username,
                     email: formData.email,
-                    password: formData.password
+                    password: formData.password,
+                    roleId: Number(formData.roleId)
                 }),
             });
 
             if (res.ok) {
-                setFormData({ username: "", email: "", password: "", confirmPassword: "" });
+                setFormData({ username: "", email: "", password: "", confirmPassword: "", roleId: "" });
                 onUserAdded();
                 onClose();
             } else {
@@ -139,6 +159,21 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }: AddUserModalProps
                             className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-indigo-500"
                             placeholder="••••••••"
                         />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center">
+                            <User className="h-3.5 w-3.5 mr-1.5" /> Role
+                        </label>
+                        <select
+                            value={formData.roleId}
+                            onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-indigo-500"
+                        >
+                            {roles.map(role => (
+                                <option key={role.id} value={role.id}>{role.roleName}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 

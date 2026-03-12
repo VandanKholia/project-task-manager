@@ -96,7 +96,7 @@ export default function MyTasksPage() {
             });
         } catch {
             // Revert on error
-            fetchTasks();
+            fetchTasks(onlyMine);
         }
     };
 
@@ -163,6 +163,15 @@ export default function MyTasksPage() {
                                 </button>
                             ))}
                         </div>
+                        <button
+                            onClick={() => setOnlyMine(!onlyMine)}
+                            className={`px-3 py-2 text-xs font-medium rounded-lg border transition-colors ${onlyMine
+                                ? "bg-indigo-600 text-white border-indigo-600"
+                                : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                                }`}
+                        >
+                            My Tasks Only
+                        </button>
                     </div>
                     <button
                         onClick={() => setIsTaskModalOpen(true)}
@@ -274,7 +283,7 @@ export default function MyTasksPage() {
             <CreateTaskModal
                 isOpen={isTaskModalOpen}
                 onClose={() => setIsTaskModalOpen(false)}
-                onTaskCreated={fetchTasks}
+                onTaskCreated={() => fetchTasks(onlyMine)}
             />
         </div>
     );

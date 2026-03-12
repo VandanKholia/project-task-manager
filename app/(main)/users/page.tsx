@@ -1,6 +1,7 @@
 "use client";
 
 import { AddUserModal } from "@/components/AddUserModal";
+import { EditRoleModal } from "@/components/EditRoleModal";
 import { Header } from "@/components/Header";
 import { Mail, Plus, Shield, Trash2, UserCog } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -8,6 +9,8 @@ import { useEffect, useState } from "react";
 export default function UsersPage() {
     const [users, setUsers] = useState<any[]>([]);
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+    const [isEditRoleModalOpen, setIsEditRoleModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchUsers = async () => {
@@ -103,7 +106,13 @@ export default function UsersPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end space-x-2">
-                                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Role">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedUser(user);
+                                                        setIsEditRoleModalOpen(true);
+                                                    }}
+                                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Role"
+                                                >
                                                     <UserCog className="h-4 w-4" />
                                                 </button>
                                                 <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Remove User">
@@ -123,6 +132,13 @@ export default function UsersPage() {
                 isOpen={isAddUserModalOpen}
                 onClose={() => setIsAddUserModalOpen(false)}
                 onUserAdded={fetchUsers}
+            />
+
+            <EditRoleModal
+                isOpen={isEditRoleModalOpen}
+                onClose={() => setIsEditRoleModalOpen(false)}
+                onRoleUpdated={fetchUsers}
+                user={selectedUser}
             />
         </div>
     );

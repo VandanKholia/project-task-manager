@@ -66,6 +66,11 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const userRoles = user.roles?.map((r: any) => r.role.roleName) || [];
+        if (!userRoles.includes("Admin") && !userRoles.includes("Project Manager")) {
+            return NextResponse.json({ error: "Forbidden: You don't have permission to create tasks" }, { status: 403 });
+        }
+
         const body = await req.json();
         const { title, description, priority, status, dueDate, projectId, assignedToId } = body;
 

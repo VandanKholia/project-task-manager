@@ -42,6 +42,11 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const userRoles = user.roles?.map((r: any) => r.role.roleName) || [];
+        if (!userRoles.includes("Admin") && !userRoles.includes("Project Manager")) {
+            return NextResponse.json({ error: "Forbidden: You don't have permission to delete tasks" }, { status: 403 });
+        }
+
         const { id } = await params;
 
         await prisma.task.delete({

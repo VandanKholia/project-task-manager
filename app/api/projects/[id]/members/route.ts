@@ -55,6 +55,11 @@ export async function POST(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const userRoles = user.roles?.map((r: any) => r.role.roleName) || [];
+        if (!userRoles.includes("Admin") && !userRoles.includes("Project Manager")) {
+            return NextResponse.json({ error: "Forbidden: You don't have permission to manage project members" }, { status: 403 });
+        }
+
         const { id } = await params;
         const body = await req.json();
         const { userId, role } = body;
@@ -102,6 +107,11 @@ export async function DELETE(
         const user = await getCurrentUser();
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const userRoles = user.roles?.map((r: any) => r.role.roleName) || [];
+        if (!userRoles.includes("Admin") && !userRoles.includes("Project Manager")) {
+            return NextResponse.json({ error: "Forbidden: You don't have permission to remove project members" }, { status: 403 });
         }
 
         const { id } = await params;
