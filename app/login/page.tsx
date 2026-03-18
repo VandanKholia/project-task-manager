@@ -50,7 +50,7 @@ function Login() {
     try {
       setIsLoading(true);
 
-      const res = await fetch("http://localhost:3000/api/auth/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -59,7 +59,7 @@ function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Invalid email or password");
+        throw new Error(data.error || data.message || "Invalid email or password");
       }
 
       router.push("/dashboard");
@@ -72,7 +72,7 @@ function Login() {
   };
 
   return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="px-8 py-3 text-center">
@@ -82,7 +82,7 @@ function Login() {
 
           {/* Form Section */}
           <div className="px-8 pb-8">
-            <div className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-6">
               {/* Email Field */}
               <div>
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -114,7 +114,7 @@ function Login() {
                   }`}
                   placeholder="Enter your password"
                   required
-                />  
+                />
                 {passwordError && (
                   <p className="text-red-500 text-sm mt-1 font-medium">{passwordError}</p>
                 )}
@@ -122,8 +122,7 @@ function Login() {
 
               {/* Login Button */}
               <button
-                type="button"
-                onClick={handleLogin}
+                type="submit"
                 disabled={isLoading}
                 className="w-full bg-blue-600 text-lg font-bold text-white py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center"
               >
@@ -156,7 +155,7 @@ function Login() {
                   "Login"
                 )}
               </button>
-            </div>
+            </form>
 
             {/* Divider */}
             <div className="relative my-6">
@@ -179,7 +178,6 @@ function Login() {
                 <span className="inline-block ml-1 transform group-hover:translate-x-1 transition-transform duration-200">
                   →
                 </span>
-                
               </button>
             </div>
           </div>

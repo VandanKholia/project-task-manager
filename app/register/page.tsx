@@ -11,6 +11,7 @@ function Register() {
     const [passwordError, setPasswordError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [roleName, setRoleName] = useState("Member");
 
     // Password validation
     const validatePassword = (password: any) => {
@@ -37,7 +38,7 @@ function Register() {
         try {
             setIsLoading(true);
 
-            const res = await fetch("http://localhost:3000/api/auth/register", {
+            const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -46,14 +47,15 @@ function Register() {
                     username: name,
                     email,
                     password,
+                    roleName,
                 }),
             });
 
             const data = await res.json();
             console.log(data)
             if (!res.ok) {
-                alert(data.error || "Registration failed");
-                throw new Error(data.error || "Registration failed");
+                alert(data.error || data.message || "Registration failed");
+                throw new Error(data.error || data.message || "Registration failed");
             }
 
             router.push("/login");
@@ -119,6 +121,21 @@ function Register() {
                                 {passwordError && (
                                     <p className="text-red-500 text-sm mt-1">{passwordError}</p>
                                 )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Role
+                                </label>
+                                <select
+                                    value={roleName}
+                                    onChange={(e) => setRoleName(e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white"
+                                >
+                                    <option value="Member">Member</option>
+                                    <option value="Project Manager">Project Manager</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
                             </div>
 
                             <button

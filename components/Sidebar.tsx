@@ -10,7 +10,7 @@ import {
     Users,
     Settings,
     LogOut,
-    Layers
+    Kanban
 } from "lucide-react";
 
 export function Sidebar() {
@@ -39,9 +39,9 @@ export function Sidebar() {
     return (
         <aside className="w-64 h-screen bg-slate-900 text-white flex flex-col border-r border-slate-800 hidden md:flex fixed left-0 top-0 bottom-0 z-50">
             <div className="h-16 flex items-center px-6 border-b border-slate-800">
-                <Layers className="h-8 w-8 text-indigo-500 mr-2" />
+                <Kanban className="h-8 w-8 text-indigo-500 mr-2" />
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-                    TaskFlow
+                    ProjectPro
                 </span>
             </div>
 

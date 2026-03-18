@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
     try {
-        const { username, email, password, roleId } = await req.json();
+        const { username, email, password, roleName } = await req.json();
         if (!username || !email || !password) {
             const response = NextResponse.next()
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -30,12 +30,15 @@ export async function POST(req: Request) {
             passwordHash: hashedPassword,
         };
 
-        if (roleId) {
-            userData.roles = {
-                create: {
-                    roleId: Number(roleId)
-                }
-            };
+        if (roleName) {
+            const role = await prisma.role.findFirst({ where: { roleName } });
+            if (role) {
+                userData.roles = {
+                    create: {
+                        roleId: role.id
+                    }
+                };
+            }
         } else {
             // Find default member role if exists
             const memberRole = await prisma.role.findUnique({ where: { roleName: "Member" } });
