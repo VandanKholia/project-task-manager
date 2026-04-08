@@ -19,20 +19,17 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Data State
   const [projects, setProjects] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
   const [myTasks, setMyTasks] = useState<any[]>([]);
 
   const fetchDashboardData = async () => {
     try {
-      // 1. Fetch User (if not already valid, but we need strictly for filtering)
       const userRes = await fetch("/api/user");
       if (userRes.ok) {
         const userData = await userRes.json();
         setUser(userData);
 
-        // 2. Fetch Projects and Tasks in parallel
         const [projectsRes, tasksRes] = await Promise.all([
           fetch("/api/projects"),
           fetch("/api/tasks")
@@ -46,7 +43,6 @@ export default function DashboardPage() {
           const allTasks = await tasksRes.json();
           setTasks(allTasks);
 
-          // Filter my tasks
           const mine = allTasks.filter((t: any) => t.assignedTo?.username === userData.username);
           setMyTasks(mine);
         }
@@ -65,12 +61,9 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [router]);
 
-  // Compute Stats
   const totalProjects = projects.length;
-  // Count tasks by status from ALL tasks (org view)
   const pendingTasks = tasks.filter((t: any) => t.status === "Pending" || t.status === "InProgress").length;
   const completedTasks = tasks.filter((t: any) => t.status === "Completed").length;
-  // Simple "productivity" metric: Completed / Total * 100
   const totalTasks = tasks.length;
   const productivity = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
@@ -81,7 +74,6 @@ export default function DashboardPage() {
     { label: "Productivity", value: `${productivity}%`, icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-100" },
   ];
 
-  // Limit recent tasks to 5
   const recentTasksDisplay = myTasks.slice(0, 5);
 
   const activities = [

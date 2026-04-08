@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProjectPro — Project Management System
 
-## Getting Started
+A full-stack web application for managing projects, tasks, and team collaboration with role-based access control. Built with **Next.js 16**, **Prisma ORM**, **PostgreSQL**, and **Tailwind CSS**.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- **Authentication** — Secure user registration & login with JWT-based session management and bcrypt password hashing.
+- **Role-Based Access Control** — Admin, Project Manager, and Member roles with permission-based UI rendering.
+- **Project Management** — Create, view, and manage multiple projects with team member assignment.
+- **Task Management** — Create tasks with priority levels (Low / Medium / High), status tracking (Pending → In Progress → Completed), due dates, and task lists.
+- **Team Collaboration** — Add members to projects, assign tasks, and post comments on tasks.
+- **Dashboard Analytics** — Overview of total projects, pending/completed tasks, and productivity metrics.
+- **Task History** — Audit trail tracking all task changes with timestamps.
+- **User Settings** — Update profile information (username, email).
+- **Responsive UI** — Clean, modern interface built with Tailwind CSS and Lucide icons.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer        | Technology                              |
+| ------------ | --------------------------------------- |
+| Frontend     | React 19, Next.js 16 (App Router)      |
+| Styling      | Tailwind CSS 4, MUI Components         |
+| Backend/API  | Next.js API Routes (RESTful)            |
+| ORM          | Prisma 7                                |
+| Database     | PostgreSQL                              |
+| Auth         | JSON Web Tokens (JWT), bcrypt           |
+| Language     | TypeScript                              |
+
+---
+
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js ≥ 18
+- PostgreSQL database
+- npm or yarn
+
+### Installation
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/<your-username>/project-management-system.git
+cd project-management-system/project-manager
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure environment variables
+#    Create a .env file with the following:
+DATABASE_URL="postgresql://user:password@localhost:5432/projectpro"
+JWT_SECRET="your-secret-key"
+
+# 4. Generate Prisma client & push schema to database
+npx prisma generate
+npx prisma db push
+
+# 5. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be running at **http://localhost:3000**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📸 Screenshots
 
-## Learn More
+### Landing Page
+![Landing Page](screenshots/landing.png)
 
-To learn more about Next.js, take a look at the following resources:
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Projects Page
+![Projects](screenshots/project.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Task Management
+![Tasks](screenshots/task.png)
 
-## Deploy on Vercel
+### User Management
+![Users](screenshots/user.png)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👤 Default Roles
+
+| Role             | Permissions                                |
+| ---------------- | ------------------------------------------ |
+| Admin            | Full access — manage users, roles, projects |
+| Project Manager  | Create/manage projects and assign tasks     |
+| Member           | View projects, update assigned tasks        |
+
+---
+
+## 📜 License
+
+This project is for educational purposes.

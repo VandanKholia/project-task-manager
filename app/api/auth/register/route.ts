@@ -23,7 +23,6 @@ export async function POST(req: Request) {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Define data to create
         const userData: any = {
             username,
             email,
@@ -40,7 +39,6 @@ export async function POST(req: Request) {
                 };
             }
         } else {
-            // Find default member role if exists
             const memberRole = await prisma.role.findUnique({ where: { roleName: "Member" } });
             if (memberRole) {
                 userData.roles = {
